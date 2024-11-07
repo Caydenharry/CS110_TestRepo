@@ -97,7 +97,7 @@ bool checkWinner(char board[6][7], bool &player1, bool &player2) {
     return false;
 }
 
-// checks if the board is FULL. Returns true if the board is full (the game is a draw)
+// checks if the board is FULL. Returns true if the board is FULL (the game is a draw)
 bool tieGame(char board[6][7]) {
     // loop through the whole board
     for (int i = 0; i < 6; ++i) {
@@ -195,10 +195,10 @@ int main() {
                 else if (!DropPiece(board, column, symbol)) {
                     cout << "Column is full. Try another column: ";
                 } else {
-                    break; // Valid move made, exit the input loop
+                    break; // Valid move made, exit the while loop
                 }
                 cin >> column;
-                column -= 1;  // Adjust column to be index again
+                column -= 1;  // Adjust column to the index again
             }
 
             // Switch player after a valid move
