@@ -1,15 +1,5 @@
-// THIS IS A TEXT FILE 
-// COPY AND PASTE THIS CODE INTO YOUR COMPLILER TO MAKE CHANGES
-// UPDATE THIS FILE WITH YOUR WORKING CODE
-
-//MAKE NOTES OF WHAT YOU DO UP HERE PLS
-// I completed the initilizeBoard function and the displayBoard function - Cayden
-// Added #include <cstdlib>, function for coin toss - CoinFlip()
-// also added a welcome screen as well as an optional function for RuleSet() to be displayed in
-// the beginning. I also widened the board a bit. - Isaac
-
 /****************************************************************
-File: 
+File: connectFour.cpp
 Description: Connect Four
 Author: Cayden Harry, Isaac Plascencia-Barrigan
 Class: CSCI - 110
@@ -19,34 +9,34 @@ I hereby certify that this program is entirely my own work.
 
 #include <cstdlib>
 #include <iostream>
+#include <string>
+#include <ctime>
 using namespace std;
 
 char board[6][7]; // 6 x 7 array of chars
-const int ROWS = 6;
-const int COLUMNS = 7; 
-unsigned int i;
-unsigned int j;
 
-void InitilizeBoard() {
-    for (i = 0; i < 6; i++) {
-        for (j = 0; j < 7; j++) {
-            board[i][j] = ' '; // Delcares every char as empty 
+// initializes board to a 6x7 array of ' '
+void initilizeBoard() {
+    for (int i = 0; i < 6; i++) {
+        for (int j = 0; j < 7; j++) {
+            board[i][j] = ' '; // Declares every char as empty
         }
-    }
+    } 
     return;
 }
 
-void DisplayBoard() {
-    // Labels each column 0 - 6
-    for (i = 0; i <= 6; i++) {
+// prints the board to screen
+void displayBoard() {
+    // Labels each column 1 - 7
+    for (int i = 1; i <= 7; i++) {
         cout << "  " << i << " ";
     }
     cout << endl;
 
     // Displays the board
-    for (i = 0; i < 6; i++) {
+    for (int i = 0; i < 6; i++) {
         cout << "| ";
-        for (j = 0; j < 7; j++) {
+        for (int j = 0; j < 7; j++) {
             cout << board[i][j] << " | ";
         }
         cout << endl;
@@ -54,141 +44,196 @@ void DisplayBoard() {
     return;
 }
 
-void RuleSet() {
-    cout << "1. Game Setup" << endl;
-    cout << "   - The Connect Four board consists of a grid with seven columns and six rows." << endl;
-    cout << "   - Players decide who will go first, often by a coin flip or mutual agreement." << endl;
-    cout << "   - Each player chooses a color of disc, typically red and yellow, which distinguishes their moves, in this case it will be either X or O." << endl;
-    cout << endl;
-    cout << "2. Objective of the Game" << endl;
-    cout << "   - The primary goal is to connect four of your discs in a straight line(vertically, horizontally, or diagonally) before your opponent does." << endl;
-    cout << "   - The game ends as soon as a player achieves a line of four connected discs, or if the grid fills up with no winner, resulting in a draw." << endl;
-    cout << endl;
-    cout << "3. Gameplay" << endl;
-    cout << "   - Turns: Players alternate turns. On each turn, a player drops one disc from the top of any of the seven columns." << endl;
-    cout << "   - Column Capacity: Each column can hold up to six discs(one per row).Once a column is filled with six discs, no more discs can be dropped into that column." << endl;
-    cout << endl;
-    cout << "4. Winning Conditions" << endl;
-    cout << "   - Four in a Row: A player wins by being the first to align four of their discs consecutively in one of the following ways:" << endl;
-    cout << "   - Horizontally: Four discs in a straight line across any row." << endl;
-    cout << "   - Vertically: Four discs in a straight line down any column." << endl;
-    cout << "   - Diagonally: Four discs in a diagonal line, either from bottom - left to top - right or from bottom - right to top - left." << endl;
-    cout << "   - Draw: If all columns are filled and no player has achieved a four - disc connection, the game ends in a draw." << endl;
-    cout << endl;
-    cout << "5. HAVE FUN!" << endl;
-    return;
-}
-
-string CoinFlip() {
-    int result = rand() % 2; // Generate either 0 or 1
-    if (result == 1) {
-        return "Heads";
-    } else {
-        return "Tails";
-    }
-}
-
+// places a piece and returns true if piece was successfully placed, false if otherwise
 bool DropPiece(char board[6][7], int column, char player) {
-    for (i = ROWS; i >= 0; i--) {
+    // Loop from bottom row to top
+    for (int i = 5; i >= 0; i--) {
         if (board[i][column] == ' ') {
             board[i][column] = player;
             return true;
         }
     }
-    return false;
+    return false; // Column is full, so piece cannot be placed
 }
 
+// function to check if there is a winner
+bool checkWinner(char board[6][7], bool &player1, bool &player2) {
+    // Loop through every spot in the board
+    for (int row = 0; row < 6; ++row) {
+        for (int col = 0; col < 7; ++col) {
+            char piece = board[row][col];
+            if (piece != ' ') { // Only check if the slot is not empty
+                // Check for horizontal win
+                if (col + 3 < 7 && piece == board[row][col + 1] && piece == board[row][col + 2] && piece == board[row][col + 3]) {
+                    if (piece == 'X') player1 = true;
+                    if (piece == 'O') player2 = true;
+                    return true;
+                }
 
-int main()
-{
-    char coinFlips;
-    char rules;
-    char symbol;
-    int column;
-    bool validMove;
-    string currentPlayer;
+                // Check for vertical win
+                if (row + 3 < 6 && piece == board[row + 1][col] && piece == board[row + 2][col] && piece == board[row + 3][col]) {
+                    if (piece == 'X') player1 = true;
+                    if (piece == 'O') player2 = true;
+                    return true;
+                }
 
-    cout << "WELCOME TO CONNECT FOUR!" << endl;
-    cout << endl << "Would you like to view the rule set?" << endl;
-    cout << "Y / N: ";
-    cin >> rules;
-    cout << endl;
-    if (rules == 'Y' || rules == 'y') {
-        RuleSet();
-        cout << endl;
-        cout << "Enter '0' for the coin toss!" << endl;
-        cout << "Choose who will be Heads and who will be Tails." << endl;
-        cout << "Good Luck!" << endl;
-    }
-    if (rules != 'Y' && rules != 'y') {
-        cout << endl;
-        cout << "Enter '0' for the coin toss!" << endl;
-        cout << "Choose who will be Heads and who will be Tails." << endl;
-        cout << "Good Luck!" << endl;
-    }
-    cout << endl;
-    cin >> coinFlips;
-    cout << endl;
-    srand(2); // Set seed for random number generator
+                // Check for win from bottom left to top right
+                if (row + 3 < 6 && col + 3 < 7 && piece == board[row + 1][col + 1] && piece == board[row + 2][col + 2] && piece == board[row + 3][col + 3]) {
+                    if (piece == 'X') player1 = true;
+                    if (piece == 'O') player2 = true;
+                    return true;
+                }
 
-    if (coinFlips == '0') {
-        for (i = 0; i < 1; ++i) {
-            cout << CoinFlip() << endl << endl;
-        }
-    }
-    while (coinFlips != '0') {
-        cout << "Enter 0: ";
-        cin >> coinFlips;
-        if (coinFlips == '0') {
-            for (i = 0; i < 1; ++i) {
-                cout << endl << CoinFlip() << endl << endl;
+                // Check for win from bottom right to top left
+                if (row + 3 < 6 && col - 3 >= 0 && piece == board[row + 1][col - 1] && piece == board[row + 2][col - 2] && piece == board[row + 3][col - 3]) {
+                    if (piece == 'X') player1 = true;
+                    if (piece == 'O') player2 = true;
+                    return true;
+                }
             }
         }
     }
+    // If no winner found, checkWinner will return false
+    return false;
+}
 
-    currentPlayer = "Player 1";
-    symbol = 'X';
-
-    cout << "Ready!" << endl << endl;
-    InitilizeBoard();
-
-    while (coinFlips == '0') {    
-        DisplayBoard();
-        cout << currentPlayer << "'s turn. Enter a column (0-6): ";
-        cin >> column;
-        cout << endl;
-        bool proceed = true;
-
-        if (column < 0 || column >= COLUMNS) {  // Invalid column input
-            cout << "Invalid column. Try again." << endl;
-            proceed = false;
-        }
-        else if (!(validMove = DropPiece(board, column, symbol))) {  // Column is full
-            cout << "Column is full. Try another column." << endl;
-            proceed = false;
-        }
-        
-        // Switch player
-        if (symbol == 'X') {
-            symbol = 'O';
-            currentPlayer = "Player 2";
-        }
-        else {
-            symbol = 'X';
-            currentPlayer = "Player 1";
+// checks if the board is FULL. Returns true if the board is full (the game is a draw)
+bool tieGame(char board[6][7]) {
+    // loop through the whole board
+    for (int i = 0; i < 6; ++i) {
+        for (int j = 0; j < 7; ++j) {
+            // check if the board is FULL, if it's not, return false
+            if (board[i][j] == ' ') {
+                return false;
+            }
         }
     }
-    
+    // if the board is FULL, return true
+    return true;
+}
 
+void RuleSet() {
+    // prints the rules of connect four
+    cout << "1. Game Setup" << endl;
+    cout << "   - The Connect Four board consists of a grid with seven columns and six rows." << endl;
+    cout << "   - Players decide who will go first with a coin flip." << endl;
+    cout << "   - Player 1 will be 'X' and player 2 will be 'O'" << endl;
+    cout << endl;
+    cout << "2. Objective of the Game" << endl;
+    cout << "   - The primary goal is to connect four of your discs in a straight line (vertically, horizontally, or diagonally) before your opponent does." << endl;
+    cout << "   - The game ends as soon as a player achieves a line of four connected discs, or if the grid fills up with no winner, resulting in a draw." << endl;
+    cout << endl;
+    cout << "3. Gameplay" << endl;
+    cout << "   - Turns: Players alternate turns. On each turn, a player drops one disc from the top of any of the seven columns." << endl;
+    cout << "   - Column Capacity: Each column can hold up to six discs (one per row). Once a column is filled with six discs, no more discs can be dropped into that column." << endl;
+    cout << endl;
+    cout << "4. Winning Conditions" << endl;
+    cout << "   - Four in a Row: A player wins by being the first to align four of their discs consecutively in one of the following ways:" << endl;
+    cout << "   - Horizontally: Four discs in a straight line across any row." << endl;
+    cout << "   - Vertically: Four discs in a straight line down any column." << endl;
+    cout << "   - Diagonally: Four discs in a diagonal line, either from bottom-left to top-right or from bottom-right to top-left." << endl;
+    cout << "   - Draw: If all columns are filled and no player has achieved a four-disc connection, the game ends in a draw." << endl;
+    cout << endl;
+    cout << "5. HAVE FUN!" << endl;
+    cout << endl;
 
+    return;
+}
 
+string CoinFlip() {
+    int result = rand() % 2; // Generate either 0 or 1
+    return (result == 1) ? "Heads" : "Tails";
+}
+
+int main() {
+    char startCoinFlip;
+    string coinFlipResult;
+    char rules;
+    char symbol;
+    int column;
+    string currentPlayer;
+    char playAgain = 'Y';
+
+    while (playAgain == 'Y' || playAgain == 'y') {
+
+        bool playerOneWin = false;
+        bool playerTwoWin = false;
+        currentPlayer = "Player 1";
+        symbol = 'X';
+
+        // prints welcome message and asks user if they would like to see the rules
+        cout << "WELCOME TO CONNECT FOUR!" << endl;
+        cout << "Would you like to view the rule set? (Y / N): ";
+        cin >> rules;
+        cout << endl;
+        if (rules == 'Y' || rules == 'y') {
+            RuleSet();
+        }
+
+        srand(time(0));
+        cout << "Press any key and enter to flip the coin! Heads or Tails will decide who is player 1." << endl;
+        cin >> startCoinFlip;
+        coinFlipResult = CoinFlip();
+        cout << "Coin flip result: " << coinFlipResult << endl << endl;
+
+        cout << "Ready!" << endl << endl;
+        initilizeBoard();
+
+        while (!checkWinner(board, playerOneWin, playerTwoWin) && !tieGame(board)) {
+            displayBoard();
+            cout << currentPlayer << "'s turn. Enter a column (1-7): ";
+            cin >> column;
+            column -= 1;  // Adjust column to index
+
+            // Keep prompting until a valid column is chosen and a piece is successfully dropped
+            while (true) {
+                // Validate column input range
+                if (column < 0 || column >= 7) {
+                    cout << "Invalid column. Try again. Enter a column (1-7): ";
+                }
+                // Attempt to drop a piece and check if successful
+                else if (!DropPiece(board, column, symbol)) {
+                    cout << "Column is full. Try another column: ";
+                } else {
+                    break; // Valid move made, exit the input loop
+                }
+                cin >> column;
+                column -= 1;  // Adjust column to be index again
+            }
+
+            // Switch player after a valid move
+            if (symbol == 'X') {
+                symbol = 'O';
+                currentPlayer = "Player 2";
+            } else {
+                symbol = 'X';
+                currentPlayer = "Player 1";
+            }
+        }
+
+        // display the final board showing results
+        displayBoard();
+
+        // if the game is a draw, display "This game is a draw!"
+        if (tieGame(board)) {
+            cout << "This game is a draw!" << endl;
+        }
+
+        // if player 1 won, display "Player 1 Wins!"
+        if (playerOneWin) {
+            cout << "Player 1 wins!" << endl;
+        }
+
+        // if player 2 won, display "Player 2 Wins!"
+        if (playerTwoWin) {
+            cout << "Player 2 wins!" << endl;
+        }
+
+        // prompt user to play again
+        cout << endl << "Would you like to play again? Enter 'Y' to play again, or any other key to exit: ";
+        cin >> playAgain;
+    }
+
+    cout << endl << "Thanks for playing Connect Four! Goodbye!" << endl << endl;
     return 0;
 }
-
-
-
-
-return 0;
-}
-
-
