@@ -21,11 +21,13 @@ I hereby certify that this program is entirely my own work.
 #include <iostream>
 using namespace std;
 
-char board[6][7]; // 6 x 7 array of chars 
+char board[6][7]; // 6 x 7 array of chars
+const int ROWS = 6;
+const int COLUMNS = 7; 
 unsigned int i;
 unsigned int j;
 
-void initilizeBoard() {
+void InitilizeBoard() {
     for (i = 0; i < 6; i++) {
         for (j = 0; j < 7; j++) {
             board[i][j] = ' '; // Delcares every char as empty 
@@ -34,9 +36,9 @@ void initilizeBoard() {
     return;
 }
 
-void displayBoard() {
-    // Labels each column 1 - 7
-    for (i = 1; i <= 7; i++) {
+void DisplayBoard() {
+    // Labels each column 0 - 6
+    for (i = 0; i <= 6; i++) {
         cout << "  " << i << " ";
     }
     cout << endl;
@@ -86,28 +88,42 @@ string CoinFlip() {
     }
 }
 
+bool DropPiece(char board[6][7], int column, char player) {
+    for (i = ROWS; i >= 0; i--) {
+        if (board[i][column] == ' ') {
+            board[i][column] = player;
+            return true;
+        }
+    }
+    return false;
+}
+
+
 int main()
 {
-    int coinFlips;
+    char coinFlips;
     char rules;
+    char symbol;
+    int column;
+    bool validMove;
+    string currentPlayer;
+
     cout << "WELCOME TO CONNECT FOUR!" << endl;
     cout << endl << "Would you like to view the rule set?" << endl;
-    cout << "Y or N: ";
+    cout << "Y / N: ";
     cin >> rules;
     cout << endl;
     if (rules == 'Y' || rules == 'y') {
         RuleSet();
         cout << endl;
-        cout << "Get ready to flip the coin!" << endl;
+        cout << "Enter '0' for the coin toss!" << endl;
         cout << "Choose who will be Heads and who will be Tails." << endl;
-        cout << "Enter how many coin tosses you would like to perform from 1-10." << endl;
         cout << "Good Luck!" << endl;
     }
     if (rules != 'Y' && rules != 'y') {
         cout << endl;
-        cout << "Get ready to flip the coin!" << endl;
+        cout << "Enter '0' for the coin toss!" << endl;
         cout << "Choose who will be Heads and who will be Tails." << endl;
-        cout << "Enter how many coin tosses you would like to perform from 1-10." << endl;
         cout << "Good Luck!" << endl;
     }
     cout << endl;
@@ -115,21 +131,59 @@ int main()
     cout << endl;
     srand(2); // Set seed for random number generator
 
-    for (int i = 0; i < coinFlips; ++i) {
-        cout << CoinFlip() << endl;
+    if (coinFlips == '0') {
+        for (i = 0; i < 1; ++i) {
+            cout << CoinFlip() << endl << endl;
+        }
     }
-    cout << endl;
-    if (coinFlips > 0) {
-        cout << "Ready player 1! You are X." << endl << endl;
-        initilizeBoard();
-        displayBoard();
+    while (coinFlips != '0') {
+        cout << "Enter 0: ";
+        cin >> coinFlips;
+        if (coinFlips == '0') {
+            for (i = 0; i < 1; ++i) {
+                cout << endl << CoinFlip() << endl << endl;
+            }
+        }
     }
+
+    currentPlayer = "Player 1";
+    symbol = 'X';
+
+    cout << "Ready!" << endl << endl;
+    InitilizeBoard();
+
+    while (coinFlips == '0') {    
+        DisplayBoard();
+        cout << currentPlayer << "'s turn. Enter a column (0-6): ";
+        cin >> column;
+        cout << endl;
+        bool proceed = true;
+
+        if (column < 0 || column >= COLUMNS) {  // Invalid column input
+            cout << "Invalid column. Try again." << endl;
+            proceed = false;
+        }
+        else if (!(validMove = DropPiece(board, column, symbol))) {  // Column is full
+            cout << "Column is full. Try another column." << endl;
+            proceed = false;
+        }
+        
+        // Switch player
+        if (symbol == 'X') {
+            symbol = 'O';
+            currentPlayer = "Player 2";
+        }
+        else {
+            symbol = 'X';
+            currentPlayer = "Player 1";
+        }
+    }
+    
 
 
 
     return 0;
 }
-
 
 
 
