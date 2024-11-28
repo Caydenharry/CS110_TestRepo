@@ -1,0 +1,168 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <iomanip> 
+using namespace std;
+
+// Function to randomly generate Tyson's move
+int TysonMove() {
+    int move = rand() % 10 + 1; // Generate number between 1 and 10
+    if (move == 1) {
+        return 1; // Tyson bites his glove and heals 10 hp
+    }
+    else if (move == 2) {
+        return 2;  // Tyson bites your ear 
+    }
+    else if (move <= 6) {
+        return 3;  // Tyson Jabs
+    }
+    else {
+        return 4; // Tyson uppercuts 
+    }
+}
+
+// Function to display stats
+void DisplayStats(const string& name, int health) {
+    cout << name << "'s Health: " << health << endl; 
+}
+
+// Function for Tyson to occasionally say something
+void TysonDialogue(int turn) {
+    if (turn % 3 == 0) {
+        cout << "Mike Tyson thays, \"You call thith boxing? Thith ith pathetic!\"\n";
+    } else if (turn % 5 == 0) {
+        cout << "Mike Tyson thays, \"You better give up now before I end thith!\"\n";
+    }
+}
+
+// TysonSimulator Function 
+void TysonSimulator() {
+ 
+    int playerHealth = 100;
+    int tysonHealth = 100;
+    int turn = 0; // Track turns
+    int choice;
+    int damage;
+    bool defended;
+    int tysonMove;
+    int tysonDamage;
+    int throwHook;
+    string moveDescription;
+
+    cout << "========================================\n";
+    cout << "    WOAH! A WILD MIKE TYSON APPEARD!    \n";
+    cout << "========================================\n";
+    cout << "\"Thith ith going to be the fight of your life,\" Mike Tyson says. \"You better be ready.\"\n\n";
+
+    // Seed the random number generator
+    srand(static_cast<unsigned>(time(0)));
+
+    // Main game loop
+    while (playerHealth > 0 && tysonHealth > 0) {
+        turn++;
+
+        // Display current health before the player's turn
+        cout << "----------------------------------------\n";
+        cout << "CURRENT HEALTH:\n";
+        DisplayStats("Player", playerHealth);
+        DisplayStats("Tyson", tysonHealth);
+        cout << "----------------------------------------\n";
+
+        // Player's turn
+        cout << "Your turn! Choose a move:\n";
+        cout << "1. Jab    (Deal 20 damage)\n";
+        cout << "2. Hook   (50/50 chance of landing. Deals 30 damage)\n";
+        cout << "3. Defend (Reduce Tyson's next attack by half)\n";
+        cout << "Enter your choice: ";
+    
+        cin >> choice;
+
+        damage = 0;
+        defended = false;
+
+        if (choice == 1) {
+            damage = 20;
+            cout << "\nYou jabbed Tyson for 20 damage!\n";
+            tysonHealth -= damage;
+        }
+        else if (choice == 2) {
+            throwHook = rand() % 2; // 50/50 chance of landing
+
+            if (throwHook == 1) {
+                damage = 30;
+                cout << "\nYou threw a right hook and hit for 30 damage!\n";
+                tysonHealth -= damage;
+            }
+            else {
+                cout << "\nYou threw a left hook and missed! Tyson laughed at you.\n";
+            }
+        }
+        else if (choice == 3) {
+            defended = true;
+            cout << "\nYou prepare to defend Tyson's next attack.\n";
+        }
+        else {
+            cout << "\nInvalid choice! You miss your turn!\n";
+        } 
+
+        // Tyson's turn
+        if (tysonHealth > 0) {
+
+            tysonMove = TysonMove();
+            tysonDamage = 0;
+
+            if (tysonMove == 1) {
+                tysonHealth += 10;
+                moveDescription = "Tyson bites his glove and heals for 10 HP!";
+            } else if (tysonMove == 2) {
+                tysonDamage = 25;
+                moveDescription = "Tyson bites your ear and deals 25 damage!";
+            } else if (tysonMove == 3) {
+                tysonDamage = 15;
+                moveDescription = "Tyson jabs and deals 15 damage!";
+            } else if (tysonMove == 4) {
+                tysonDamage = 20;
+                moveDescription = "Tyson throws an uppercut and deals 20 damage!";
+            }
+
+            // Apply defense
+            if (defended) {
+                tysonDamage /= 2;
+                moveDescription += " Your defense reduces Tyson's damage to " + to_string(tysonDamage) + "!";
+            }
+
+            // Apply Tyson's damage to player
+            playerHealth -= tysonDamage;
+
+            // Display what Tyson did
+            cout << "\nTyson's Turn: " << moveDescription << "\n";
+
+            // Tyson speaks occasionally
+            if (turn % 3 == 0) {
+                TysonDialogue(turn);
+            }
+        }
+
+        // Display current health after the turn
+        cout << "\nUPDATED HEALTH:\n";
+        DisplayStats("Player", playerHealth);
+        DisplayStats("Tyson", tysonHealth);
+        cout << "----------------------------------------\n\n";
+    }
+
+    // End of the level
+    if (playerHealth <= 0) {
+        cout << "\"Thith ith why I'm the champ!\" Mike Tyson says as you fall down." << endl;
+        cout << "GAME OVER. Better luck next time.\n";
+        exit(0); // Exit the game if the player loses
+    } else if (tysonHealth <= 0) {
+        cout << "\"No! Thith ith imposthible! How did you win?\" Mike Tyson says before you knock him out.\n";
+        cout << "CONGRATULATIONS! You beat up a 58 year old with health issues.\n";
+    }
+}
+
+int main() {
+    TysonSimulator();
+
+    return 0;
+}
